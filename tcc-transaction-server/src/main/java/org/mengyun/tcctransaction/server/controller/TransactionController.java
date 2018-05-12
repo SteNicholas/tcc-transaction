@@ -14,9 +14,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
-
 /**
- * Created by changming.xie on 8/26/16.
+ * 事务控制器
  */
 @Controller
 @RequestMapping("/management")
@@ -29,10 +28,15 @@ public class TransactionController {
 
     public static final int DEFAULT_PAGE_SIZE = 10;
 
-
+    /**
+     * 分页查看事务列表
+     *
+     * @param domain
+     * @param pageNum
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView manager(@RequestParam(value = "domain", required = false) String domain, @RequestParam(value = "pagenum", required = false) Integer pageNum) {
-
         if (StringUtils.isEmpty(domain)) {
             return manager();
         }
@@ -42,7 +46,6 @@ public class TransactionController {
         }
 
         ModelAndView modelAndView = new ModelAndView("manager");
-
         List<TransactionVo> transactionVos = daoRepository.getDao(domain).findTransactions(pageNum, DEFAULT_PAGE_SIZE);
         Integer totalCount = daoRepository.getDao(domain).countOfFindTransactions();
         Integer pages = totalCount / DEFAULT_PAGE_SIZE;
@@ -59,10 +62,17 @@ public class TransactionController {
         return modelAndView;
     }
 
+    /**
+     * 重置事务恢复重试次数
+     *
+     * @param domain
+     * @param globalTxId
+     * @param branchQualifier
+     * @return
+     */
     @RequestMapping(value = "/retry/reset", method = RequestMethod.PUT)
     @ResponseBody
     public CommonResponse<Void> reset(String domain, String globalTxId, String branchQualifier) {
-
         daoRepository.getDao(domain).resetRetryCount(
                 globalTxId,
                 branchQualifier);
@@ -70,10 +80,17 @@ public class TransactionController {
         return new CommonResponse<Void>();
     }
 
+    /**
+     * 重置事务恢复重试次数
+     *
+     * @param domain
+     * @param globalTxId
+     * @param branchQualifier
+     * @return
+     */
     @RequestMapping(value = "/retry/delete", method = RequestMethod.PUT)
     @ResponseBody
     public CommonResponse<Void> delete(String domain, String globalTxId, String branchQualifier) {
-
         daoRepository.getDao(domain).resetRetryCount(
                 globalTxId,
                 branchQualifier);
@@ -81,10 +98,17 @@ public class TransactionController {
         return new CommonResponse<Void>();
     }
 
+    /**
+     * 重置事务恢复重试次数
+     *
+     * @param domain
+     * @param globalTxId
+     * @param branchQualifier
+     * @return
+     */
     @RequestMapping(value = "/retry/confirm", method = RequestMethod.PUT)
     @ResponseBody
     public CommonResponse<Void> confirm(String domain, String globalTxId, String branchQualifier) {
-
         daoRepository.getDao(domain).resetRetryCount(
                 globalTxId,
                 branchQualifier);
@@ -92,10 +116,17 @@ public class TransactionController {
         return new CommonResponse<Void>();
     }
 
+    /**
+     * 重置事务恢复重试次数
+     *
+     * @param domain
+     * @param globalTxId
+     * @param branchQualifier
+     * @return
+     */
     @RequestMapping(value = "/retry/cancel", method = RequestMethod.PUT)
     @ResponseBody
     public CommonResponse<Void> cancel(String domain, String globalTxId, String branchQualifier) {
-
         daoRepository.getDao(domain).resetRetryCount(
                 globalTxId,
                 branchQualifier);
@@ -112,6 +143,4 @@ public class TransactionController {
     public ModelAndView manager(String domain) {
         return manager(domain, DEFAULT_PAGE_NUM);
     }
-
-
 }

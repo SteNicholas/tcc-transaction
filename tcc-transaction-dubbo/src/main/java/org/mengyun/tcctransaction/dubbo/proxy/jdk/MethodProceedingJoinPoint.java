@@ -14,18 +14,33 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 /**
- * Created by changming.xie on 2/26/17.
+ * 方法处理切面
  */
 public class MethodProceedingJoinPoint implements ProceedingJoinPoint, JoinPoint.StaticPart {
 
+    /**
+     * 代理对象
+     */
     private Object proxy;
 
+    /**
+     * 目标对象
+     */
     private Object target;
 
+    /**
+     * 方法
+     */
     private Method method;
 
+    /**
+     * 参数数组
+     */
     private Object[] args;
 
+    /**
+     * Lazily initialized MethodSignature.
+     */
     private Signature signature;
 
     /**
@@ -47,7 +62,6 @@ public class MethodProceedingJoinPoint implements ProceedingJoinPoint, JoinPoint
 
     @Override
     public Object proceed() throws Throwable {
-
         // Use reflection to invoke the method.
         try {
             ReflectionUtils.makeAccessible(method);
@@ -229,7 +243,6 @@ public class MethodProceedingJoinPoint implements ProceedingJoinPoint, JoinPoint
         }
     }
 
-
     /**
      * Lazily initialized SourceLocation.
      */
@@ -254,5 +267,4 @@ public class MethodProceedingJoinPoint implements ProceedingJoinPoint, JoinPoint
             throw new UnsupportedOperationException();
         }
     }
-
 }

@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Created by changming.xie on 4/1/16.
+ * 支付订单服务实现
  */
 @Service
 public class PlaceOrderServiceImpl {
@@ -30,20 +30,19 @@ public class PlaceOrderServiceImpl {
 
 
     public String placeOrder(long payerUserId, long shopId, List<Pair<Long, Integer>> productQuantities, BigDecimal redPacketPayAmount) {
+        //获取商店
         Shop shop = shopRepository.findById(shopId);
-
+        //创建订单
         Order order = orderService.createOrder(payerUserId, shop.getOwnerUserId(), productQuantities);
 
         Boolean result = false;
-
         try {
+            //发起支付
             paymentService.makePayment(order, redPacketPayAmount, order.getTotalAmount().subtract(redPacketPayAmount));
-
         } catch (ConfirmingException confirmingException) {
             //exception throws with the tcc transaction status is CONFIRMING,
             //when tcc transaction is confirming status,
             // the tcc transaction recovery will try to confirm the whole transaction to ensure eventually consistent.
-
             result = true;
         } catch (CancellingException cancellingException) {
             //exception throws with the tcc transaction status is CANCELLING,

@@ -5,14 +5,32 @@ import org.mengyun.tcctransaction.server.vo.TransactionVo;
 import java.util.List;
 
 /**
- * Created by changming.xie on 9/7/16.
+ * 事务Dao
  */
 public interface TransactionDao {
 
+    /**
+     * 分页获取事务Vo集合
+     *
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     public List<TransactionVo> findTransactions(Integer pageNum, int pageSize);
 
+    /**
+     * 获取事务总数量
+     *
+     * @return
+     */
     public Integer countOfFindTransactions();
 
+    /**
+     * 重置事务重试次数
+     *
+     * @param globalTxId
+     * @param branchQualifier
+     */
     public void resetRetryCount(String  globalTxId, String branchQualifier);
 
     public void delete(String  globalTxId, String branchQualifier);
@@ -23,4 +41,3 @@ public interface TransactionDao {
 
     public String getDomain();
 }
-

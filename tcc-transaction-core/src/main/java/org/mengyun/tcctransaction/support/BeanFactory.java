@@ -1,10 +1,25 @@
 package org.mengyun.tcctransaction.support;
 
 /**
- * Created by changmingxie on 11/20/15.
+ * Bean工厂
  */
 public interface BeanFactory {
-    <T> T getBean(Class<T> var1);
 
+    /**
+     * 获取指定类Bean实例
+     *
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    <T> T getBean(Class<T> clazz);
+
+    /**
+     * 判断是否为指定类工厂
+     *
+     * @param clazz
+     * @param <T>
+     * @return
+     */
     <T> boolean isFactoryOf(Class<T> clazz);
 }

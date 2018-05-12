@@ -14,7 +14,7 @@ import org.mengyun.tcctransaction.utils.ReflectionUtils;
 import java.lang.reflect.Method;
 
 /**
- * Created by changming.xie on 2/26/17.
+ * Tcc调用处理器,用于调用Dubbo Service服务时使用ResourceCoordinatorInterceptor拦截处理
  */
 public class TccInvokerInvocationHandler extends InvokerInvocationHandler {
 
@@ -30,24 +30,22 @@ public class TccInvokerInvocationHandler extends InvokerInvocationHandler {
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-
         Compensable compensable = method.getAnnotation(Compensable.class);
-
         if (compensable != null) {
-
             if (StringUtils.isEmpty(compensable.confirmMethod())) {
+                //设置@Compensable注解属性
                 ReflectionUtils.changeAnnotationValue(compensable, "confirmMethod", method.getName());
                 ReflectionUtils.changeAnnotationValue(compensable, "cancelMethod", method.getName());
                 ReflectionUtils.changeAnnotationValue(compensable, "transactionContextEditor", DubboTransactionContextEditor.class);
                 ReflectionUtils.changeAnnotationValue(compensable, "propagation", Propagation.SUPPORTS);
             }
 
+            //生成处理切面
             ProceedingJoinPoint pjp = new MethodProceedingJoinPoint(proxy, target, method, args);
+            //获取资源协调者切面拦截处理,调用ResourceCoordinatorAspect#interceptTransactionContextMethod(...)方法对方法切面拦截处理,无需调用CompensableTransactionAspect切面因为传播级别为Propagation.SUPPORTS不会发起事务
             return FactoryBuilder.factoryOf(ResourceCoordinatorAspect.class).getInstance().interceptTransactionContextMethod(pjp);
         } else {
             return super.invoke(target, method, args);
         }
     }
-
-
 }

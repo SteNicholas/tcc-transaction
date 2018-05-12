@@ -22,7 +22,7 @@ import java.security.InvalidParameterException;
 import java.util.List;
 
 /**
- * Created by changming.xie on 4/1/16.
+ * 订单控制器
  */
 @Controller
 @RequestMapping("")
@@ -64,7 +64,6 @@ public class OrderController {
     public ModelAndView productDetail(@PathVariable long userId,
                                       @PathVariable long shopId,
                                       @PathVariable long productId) {
-
         ModelAndView mv = new ModelAndView("product_detail");
 
         mv.addObject("capitalAmount", accountService.getCapitalAccountByUserId(userId));
@@ -78,13 +77,20 @@ public class OrderController {
         return mv;
     }
 
+    /**
+     * 支付订单
+     *
+     * @param redPacketPayAmount
+     * @param shopId
+     * @param payerUserId
+     * @param productId
+     * @return
+     */
     @RequestMapping(value = "/placeorder", method = RequestMethod.POST)
     public RedirectView placeOrder(@RequestParam String redPacketPayAmount,
                                    @RequestParam long shopId,
                                    @RequestParam long payerUserId,
                                    @RequestParam long productId) {
-
-
         PlaceOrderRequest request = buildRequest(redPacketPayAmount, shopId, payerUserId, productId);
 
         String merchantOrderNo = placeOrderService.placeOrder(request.getPayerUserId(), request.getShopId(),
@@ -95,9 +101,8 @@ public class OrderController {
 
     @RequestMapping(value = "/payresult/{merchantOrderNo}", method = RequestMethod.GET)
     public ModelAndView getPayResult(@PathVariable String merchantOrderNo) {
-
         ModelAndView mv = new ModelAndView("pay_success");
-
+        //支付结果提示
         String payResultTip = null;
         Order foundOrder = orderService.findOrderByMerchantOrderNo(merchantOrderNo);
 
@@ -115,7 +120,6 @@ public class OrderController {
 
         return mv;
     }
-
 
     private PlaceOrderRequest buildRequest(String redPacketPayAmount, long shopId, long payerUserId, long productId) {
         BigDecimal redPacketPayAmountInBigDecimal = new BigDecimal(redPacketPayAmount);

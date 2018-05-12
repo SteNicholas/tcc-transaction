@@ -3,17 +3,30 @@ package org.mengyun.tcctransaction;
 import java.io.Serializable;
 
 /**
- * Created by changmingxie on 11/9/15.
+ * 调用上下文
  */
 public class InvocationContext implements Serializable {
 
     private static final long serialVersionUID = -7969140711432461165L;
+
+    /**
+     * 目标类
+     */
     private Class targetClass;
 
+    /**
+     * 方法名
+     */
     private String methodName;
 
+    /**
+     * 参数类型数组
+     */
     private Class[] parameterTypes;
 
+    /**
+     * 参数数组
+     */
     private Object[] args;
 
     public InvocationContext() {

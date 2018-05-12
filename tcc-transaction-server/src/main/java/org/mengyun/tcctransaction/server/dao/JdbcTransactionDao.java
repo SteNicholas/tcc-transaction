@@ -1,6 +1,5 @@
 package org.mengyun.tcctransaction.server.dao;
 
-
 import org.mengyun.tcctransaction.server.vo.PageVo;
 import org.mengyun.tcctransaction.server.vo.TransactionVo;
 
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by cheng.zeng on 2016/9/2.
+ * JDBC事务Dao
  */
 public class JdbcTransactionDao implements TransactionDao {
 
@@ -40,7 +39,6 @@ public class JdbcTransactionDao implements TransactionDao {
 
     @Override
     public List<TransactionVo> findTransactions(Integer pageNum, int pageSize) {
-
         Connection connection = getConnection();
         List<TransactionVo> transactionVos = new ArrayList<TransactionVo>();
         PreparedStatement preparedStatement = null;
@@ -84,7 +82,6 @@ public class JdbcTransactionDao implements TransactionDao {
 
     @Override
     public Integer countOfFindTransactions() {
-
         Connection connection = getConnection();
         PageVo<TransactionVo> pageVo = new PageVo<TransactionVo>();
         List<TransactionVo> transactionVos = new ArrayList<TransactionVo>();
@@ -110,7 +107,6 @@ public class JdbcTransactionDao implements TransactionDao {
 
     @Override
     public void resetRetryCount(String globalTxId, String branchQualifier) {
-
         Connection connection = getConnection();
         PreparedStatement preparedStatement = null;
         try {

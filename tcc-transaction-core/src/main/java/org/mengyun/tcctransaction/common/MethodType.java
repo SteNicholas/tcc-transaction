@@ -1,9 +1,9 @@
 package org.mengyun.tcctransaction.common;
 
 /**
- * Created by changmingxie on 11/11/15.
+ * 方法类型
  */
-public enum  MethodType {
+public enum MethodType {
     ROOT,
     CONSUMER,
     PROVIDER,

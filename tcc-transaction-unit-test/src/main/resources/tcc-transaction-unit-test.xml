@@ -6,7 +6,6 @@
 
     <context:component-scan base-package="org.mengyun.tcctransaction.unittest"/>
 
-
     <bean class="org.mengyun.tcctransaction.spring.recover.DefaultRecoverConfig">
         <property name="maxRetryCount" value="30"/>
         <property name="recoverDuration" value="5"/>
@@ -22,13 +21,12 @@
 
     <bean id="transactionSerializer" class="org.mengyun.tcctransaction.serializer.JdkSerializationSerializer"/>
 
-
     <bean id="tccDataSource" class="org.apache.commons.dbcp.BasicDataSource"
           destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://127.0.0.1:3306/TCC"/>
         <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="password" value="root"/>
     </bean>
 
     <!--<bean id="transactionRepository"-->
@@ -38,7 +36,6 @@
     <!--<property name="zkTimeout" value="10000"/>-->
     <!--<property name="zkRootPath" value="/tcc_ut"/>-->
     <!--</bean>-->
-
 
     <!--recommanded way; to use this, make sure redis is safely durable,which means need set redis as AOF mode and always fsync.
       appendonly yes
@@ -65,5 +62,4 @@
     <!--<bean id="transactionRepository" class="org.mengyun.tcctransaction.repository.FileSystemTransactionRepository">-->
     <!--<property name="rootPath" value="/data/tcc"/>-->
     <!--</bean>-->
-
 </beans>

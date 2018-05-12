@@ -6,7 +6,9 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 
 /**
- * Created by changmingxie on 11/8/15.
+ * 资源协调者切面,用于封装事务的参与者集合添加参与者
+ * 通过org.aspectj.lang.annotation.@Pointcut + org.aspectj.lang.annotation.@Around注解,配置对@Compensable注解的方法进行拦截,
+ * 调用ResourceCoordinatorInterceptor#interceptTransactionContextMethod(...)方法进行处理
  */
 @Aspect
 public abstract class ResourceCoordinatorAspect {

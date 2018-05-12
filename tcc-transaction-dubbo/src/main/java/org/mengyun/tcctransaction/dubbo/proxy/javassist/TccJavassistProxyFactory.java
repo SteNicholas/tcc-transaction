@@ -5,7 +5,7 @@ import com.alibaba.dubbo.rpc.proxy.InvokerInvocationHandler;
 import com.alibaba.dubbo.rpc.proxy.javassist.JavassistProxyFactory;
 
 /**
- * Created by changming.xie on 1/14/17.
+ * Tcc Javassist代理工厂
  */
 public class TccJavassistProxyFactory extends JavassistProxyFactory {
 

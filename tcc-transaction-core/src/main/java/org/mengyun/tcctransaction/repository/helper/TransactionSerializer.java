@@ -8,10 +8,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by changming.xie on 9/15/16.
+ * 事务序列化
  */
 public class TransactionSerializer {
 
+    /**
+     * 事务序列化
+     *
+     * @param serializer
+     * @param transaction
+     * @return
+     */
     public static byte[] serialize(ObjectSerializer serializer, Transaction transaction) {
         Map<String, Object> map = new HashMap<String, Object>();
 
@@ -28,8 +35,14 @@ public class TransactionSerializer {
         return serializer.serialize(map);
     }
 
+    /**
+     * 事务反序列化
+     *
+     * @param serializer
+     * @param value
+     * @return
+     */
     public static Transaction deserialize(ObjectSerializer serializer, byte[] value) {
-
         Map<String, Object> map = (Map<String, Object>) serializer.deserialize(value);
 
         byte[] content = (byte[]) map.get("CONTENT");

@@ -8,10 +8,9 @@ import java.lang.reflect.Proxy;
 import java.util.Map;
 
 /**
- * Created by changmingxie on 11/22/15.
+ * 反射工具类
  */
 public class ReflectionUtils {
-
 
     public static void makeAccessible(Method method) {
         if ((!Modifier.isPublic(method.getModifiers()) || !Modifier.isPublic(method.getDeclaringClass().getModifiers())) && !method.isAccessible()) {
@@ -23,39 +22,26 @@ public class ReflectionUtils {
         Object handler = Proxy.getInvocationHandler(annotation);
 
         Field f;
-
         f = handler.getClass().getDeclaredField("memberValues");
-
         f.setAccessible(true);
 
         Map<String, Object> memberValues;
-
         memberValues = (Map<String, Object>) f.get(handler);
-
         Object oldValue = memberValues.get(key);
-
         if (oldValue == null || oldValue.getClass() != newValue.getClass()) {
-
             throw new IllegalArgumentException();
         }
 
         memberValues.put(key, newValue);
-
         return oldValue;
     }
 
     public static Class getDeclaringType(Class aClass, String methodName, Class<?>[] parameterTypes) {
-
         Method method = null;
-
-
         Class findClass = aClass;
-
         do {
             Class[] clazzes = findClass.getInterfaces();
-
             for (Class clazz : clazzes) {
-
                 try {
                     method = clazz.getDeclaredMethod(methodName, parameterTypes);
                 } catch (NoSuchMethodException e) {
@@ -68,14 +54,12 @@ public class ReflectionUtils {
             }
 
             findClass = findClass.getSuperclass();
-
         } while (!findClass.equals(Object.class));
 
         return aClass;
     }
 
     public static Object getNullValue(Class type) {
-
         if (boolean.class.equals(type)) {
             return false;
         } else if (byte.class.equals(type)) {

@@ -14,7 +14,7 @@ import org.mengyun.tcctransaction.unittest.utils.UnitTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Created by changmingxie on 12/3/15.
+ * 转账服务测试
  */
 public class TransferServiceTest extends AbstractTestCase {
 
@@ -30,9 +30,13 @@ public class TransferServiceTest extends AbstractTestCase {
     @Autowired
     TransactionRecovery transactionRecovery;
 
+    /**
+     * 转账测试,场景:账户1(余额为100)->账户2(余额为200)[转账50]
+     *
+     * @throws InterruptedException
+     */
     @Test
     public void testTransfer() throws InterruptedException {
-
         //given
         buildAccount();
 
@@ -41,7 +45,6 @@ public class TransferServiceTest extends AbstractTestCase {
 
         //then
         SubAccount subAccountFrom = subAccountRepository.findById(1L);
-
         SubAccount subAccountTo = subAccountRepository.findById(2L);
 
         Assert.assertTrue(subAccountFrom.getStatus() == AccountStatus.NORMAL.getId());
@@ -51,9 +54,13 @@ public class TransferServiceTest extends AbstractTestCase {
         Assert.assertTrue(subAccountTo.getBalanceAmount() == 250);
     }
 
+    /**
+     * 转账测试,场景:账户1(余额为100)->账户2(余额为200)[转账50],事务传播级别:MANDATORY,抛异常
+     *
+     * @throws InterruptedException
+     */
     @Test
     public void testTransferWithMandatoryPropagtion() throws InterruptedException {
-
         //given
         buildAccount();
 
@@ -65,9 +72,11 @@ public class TransferServiceTest extends AbstractTestCase {
         }
     }
 
+    /**
+     * 多层次转账测试,场景:账户1(余额为100)->账户2(余额为200)[转账50]
+     */
     @Test
     public void testTransferWithMultipleTier() {
-
         //given
         buildAccount();
 
@@ -76,7 +85,6 @@ public class TransferServiceTest extends AbstractTestCase {
 
         //then
         SubAccount subAccountFrom = subAccountRepository.findById(1L);
-
         SubAccount subAccountTo = subAccountRepository.findById(2L);
 
         Assert.assertTrue(subAccountFrom.getStatus() == AccountStatus.NORMAL.getId());
@@ -85,13 +93,15 @@ public class TransferServiceTest extends AbstractTestCase {
         Assert.assertTrue(subAccountFrom.getBalanceAmount() == 50);
         Assert.assertTrue(subAccountTo.getBalanceAmount() == 250);
 
-
         AccountRecord accountRecordTo = accountRecordRepository.findById(2L);
 
         Assert.assertTrue(accountRecordTo.getBalanceAmount() == 50);
         Assert.assertTrue(accountRecordTo.getStatusId() == AccountStatus.NORMAL.getId());
     }
 
+    /**
+     * 多分支转账测试,场景:账户1(余额为100)->账户2(余额为200)[转账70]
+     */
     @Test
     public void testTransferWithMultiplerConsumer() {
         //given
@@ -102,7 +112,6 @@ public class TransferServiceTest extends AbstractTestCase {
 
         //then
         SubAccount subAccountFrom = subAccountRepository.findById(1L);
-
         SubAccount subAccountTo = subAccountRepository.findById(2L);
 
         Assert.assertTrue(subAccountFrom.getStatus() == AccountStatus.NORMAL.getId());
@@ -112,6 +121,9 @@ public class TransferServiceTest extends AbstractTestCase {
         Assert.assertTrue(subAccountTo.getBalanceAmount() == 270);
     }
 
+    /**
+     * 只有Try阶段多分支转账测试,场景:账户1(余额为100)->账户2(余额为200)[转账70]
+     */
     @Test
     public void testTransferWithOnlyTryAndMultipleConsumer() {
         //given
@@ -122,7 +134,6 @@ public class TransferServiceTest extends AbstractTestCase {
 
         //then
         SubAccount subAccountFrom = subAccountRepository.findById(1L);
-
         SubAccount subAccountTo = subAccountRepository.findById(2L);
 
         Assert.assertTrue(subAccountFrom.getStatus() == AccountStatus.NORMAL.getId());
@@ -132,6 +143,9 @@ public class TransferServiceTest extends AbstractTestCase {
         Assert.assertTrue(subAccountTo.getBalanceAmount() == 270);
     }
 
+    /**
+     * 无事务上下文转账测试,场景:账户1(余额为100)->账户2(余额为200)[转账70]
+     */
     @Test
     public void testTransferWithNoTransactionContext() {
         //given
@@ -147,10 +161,11 @@ public class TransferServiceTest extends AbstractTestCase {
         Assert.assertTrue(subAccountTo.getBalanceAmount() == 270);
     }
 
-
+    /**
+     * Try阶段恢复测试
+     */
     @Test
     public void testTryingRecovery() {
-
         //given
         UnitTest.TRYING_EXCEPTION = true;
 
@@ -160,7 +175,6 @@ public class TransferServiceTest extends AbstractTestCase {
 
             //when
             transferService.transferWithMultipleConsumer(1, 2, 70);
-
         } catch (Throwable e) {
 
         }
@@ -181,12 +195,13 @@ public class TransferServiceTest extends AbstractTestCase {
             throw new Error(e);
         }
         Assert.assertTrue(accountRecord.getBalanceAmount() == 0);
-
     }
 
+    /**
+     * Confirm阶段恢复测试
+     */
     @Test
     public void testConfirmingRecovery() {
-
         //given
         UnitTest.CONFIRMING_EXCEPTION = true;
 
@@ -220,7 +235,6 @@ public class TransferServiceTest extends AbstractTestCase {
         Assert.assertTrue(accountRecord.getBalanceAmount() == 70);
 
         SubAccount subAccountFrom = subAccountRepository.findById(1L);
-
         SubAccount subAccountTo = subAccountRepository.findById(2L);
 
         Assert.assertTrue(subAccountFrom.getStatus() == AccountStatus.NORMAL.getId());
@@ -228,14 +242,11 @@ public class TransferServiceTest extends AbstractTestCase {
 
         Assert.assertTrue(subAccountFrom.getBalanceAmount() == 30);
         Assert.assertTrue(subAccountTo.getBalanceAmount() == 270);
-
-
     }
 
 
     private void buildAccount() {
         SubAccount subAccountFrom = subAccountRepository.findById(1L);
-
         subAccountFrom.setBalanceAmount(100);
         subAccountFrom.setStatus(AccountStatus.NORMAL.getId());
 

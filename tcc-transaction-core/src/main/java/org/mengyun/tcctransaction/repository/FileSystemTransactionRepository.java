@@ -18,13 +18,21 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by changming.xie on 2/24/16.
+ * File事务存储器,用于将事务存储到文件系统,不支持乐观锁更新
+ * 仅适用事务发布方或调用方应用节点为单节点场景,因为日志是存储在应用节点本地文件中
+ * 生产上不建议使用FileSystemTransactionRepository因为分布式存储挂载文件,不支持多节点共享
  * this repository is suitable for single node, not for cluster nodes
  */
 public class FileSystemTransactionRepository extends CachableTransactionRepository {
 
+    /**
+     * 存储文件根目录
+     */
     private String rootPath = "/tcc";
 
+    /**
+     * 根目录是否初始化
+     */
     private volatile boolean initialized;
 
     private ObjectSerializer serializer = new JdkSerializationSerializer();
@@ -37,25 +45,45 @@ public class FileSystemTransactionRepository extends CachableTransactionReposito
         this.rootPath = rootPath;
     }
 
+    /**
+     * 新增事务
+     *
+     * @param transaction
+     * @return
+     */
     @Override
     protected int doCreate(Transaction transaction) {
+        //事务写入文件
         writeFile(transaction);
         return 1;
     }
 
+    /**
+     * 更新事务
+     *
+     * @param transaction
+     * @return
+     */
     @Override
     protected int doUpdate(Transaction transaction) {
-
+        //设置事务最后更新时间
         transaction.updateVersion();
+        //设置事务最新版本号
         transaction.updateTime();
-
+        //事务写入文件
         writeFile(transaction);
         return 1;
     }
 
+    /**
+     * 删除事务
+     *
+     * @param transaction
+     * @return
+     */
     @Override
     protected int doDelete(Transaction transaction) {
-
+        //根据事务编号获取文件路径
         String fullFileName = getFullFileName(transaction.getXid());
         File file = new File(fullFileName);
         if (file.exists()) {
@@ -64,9 +92,14 @@ public class FileSystemTransactionRepository extends CachableTransactionReposito
         return 1;
     }
 
+    /**
+     * 根据事务编号获取事务
+     *
+     * @param xid
+     * @return
+     */
     @Override
     protected Transaction doFindOne(Xid xid) {
-
         String fullFileName = getFullFileName(xid);
         File file = new File(fullFileName);
 
@@ -77,13 +110,18 @@ public class FileSystemTransactionRepository extends CachableTransactionReposito
         return null;
     }
 
+    /**
+     * 获取超过指定时间的事务集合
+     *
+     * @param date
+     * @return
+     */
     @Override
     protected List<Transaction> doFindAllUnmodifiedSince(Date date) {
-
+        //获取文件系统存储的所有事务
         List<Transaction> allTransactions = doFindAll();
-
+        //加载所有事务根据时间过滤
         List<Transaction> allUnmodifiedSince = new ArrayList<Transaction>();
-
         for (Transaction transaction : allTransactions) {
             if (transaction.getLastUpdateTime().compareTo(date) < 0) {
                 allUnmodifiedSince.add(transaction);
@@ -93,9 +131,12 @@ public class FileSystemTransactionRepository extends CachableTransactionReposito
         return allUnmodifiedSince;
     }
 
-
+    /**
+     * 获取文件系统存储的所有事务
+     *
+     * @return
+     */
     protected List<Transaction> doFindAll() {
-
         List<Transaction> transactions = new ArrayList<Transaction>();
         File path = new File(rootPath);
         File[] files = path.listFiles();
@@ -108,17 +149,25 @@ public class FileSystemTransactionRepository extends CachableTransactionReposito
         return transactions;
     }
 
+    /**
+     * 根据事务编号获取文件路径
+     *
+     * @param xid
+     * @return
+     */
     private String getFullFileName(Xid xid) {
         return String.format("%s/%s", rootPath, xid);
     }
 
+    /**
+     * 初始化根目录
+     */
     private void makeDirIfNecessary() {
         if (!initialized) {
             synchronized (FileSystemTransactionRepository.class) {
                 if (!initialized) {
                     File rootPathFile = new File(rootPath);
                     if (!rootPathFile.exists()) {
-
                         boolean result = rootPathFile.mkdir();
 
                         if (!result) {
@@ -134,6 +183,11 @@ public class FileSystemTransactionRepository extends CachableTransactionReposito
         }
     }
 
+    /**
+     * 事务写入文件
+     *
+     * @param transaction
+     */
     private void writeFile(Transaction transaction) {
         makeDirIfNecessary();
 
@@ -168,16 +222,19 @@ public class FileSystemTransactionRepository extends CachableTransactionReposito
         }
     }
 
+    /**
+     * 根据文件获取事务
+     *
+     * @param file
+     * @return
+     */
     private Transaction readTransaction(File file) {
-
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(file);
 
             byte[] content = new byte[(int) file.length()];
-
             fis.read(content);
-
             if (content != null) {
                 return TransactionSerializer.deserialize(serializer, content);
             }

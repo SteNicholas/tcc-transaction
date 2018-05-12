@@ -6,15 +6,29 @@ import redis.clients.jedis.JedisPool;
 import javax.transaction.xa.Xid;
 
 /**
- * Created by changming.xie on 9/15/16.
+ * Redis工具类
  */
 public class RedisHelper {
 
-
+    /**
+     * 根据Key前缀、事务编号获取Redis Key
+     *
+     * @param keyPrefix
+     * @param xid
+     * @return
+     */
     public static byte[] getRedisKey(String keyPrefix, Xid xid) {
         return new StringBuilder().append(keyPrefix).append(xid.toString()).toString().getBytes();
     }
 
+    /**
+     * 根据Key前缀、全局事务编号以及分支事务编号获取Redis Key
+     *
+     * @param keyPrefix
+     * @param globalTransactionId
+     * @param branchQualifier
+     * @return
+     */
     public static byte[] getRedisKey(String keyPrefix, String globalTransactionId, String branchQualifier) {
         return new StringBuilder().append(keyPrefix).append(globalTransactionId).append(":").append(branchQualifier).toString().getBytes();
     }
@@ -27,6 +41,14 @@ public class RedisHelper {
         return new StringBuilder().append("VER:").append(keyPrefix).append(globalTransactionId).append(":").append(branchQualifier).toString().getBytes();
     }
 
+    /**
+     * 通过Jedis池执行Jedis回调
+     *
+     * @param jedisPool
+     * @param callback
+     * @param <T>
+     * @return
+     */
     public static <T> T execute(JedisPool jedisPool, JedisCallback<T> callback) {
         Jedis jedis = null;
         try {

@@ -4,15 +4,28 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * Created by twinkle.zhou on 16/11/10.
+ * 商品
  */
-public class Product implements Serializable{
+public class Product implements Serializable {
+
+    /**
+     * 商品编号
+     */
     private long productId;
 
+    /**
+     * 商店编号
+     */
     private long shopId;
 
+    /**
+     * 商品名称
+     */
     private String productName;
 
+    /**
+     * 商品价格
+     */
     private BigDecimal price;
 
     public Product() {

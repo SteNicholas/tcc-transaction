@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * Created by changming.xie on 3/25/16.
+ * 订单服务实现
  */
 @Service
 public class OrderServiceImpl {
@@ -22,15 +22,27 @@ public class OrderServiceImpl {
     @Autowired
     OrderFactory orderFactory;
 
+    /**
+     * 创建订单
+     *
+     * @param payerUserId
+     * @param payeeUserId
+     * @param productQuantities
+     * @return
+     */
     @Transactional
     public Order createOrder(long payerUserId, long payeeUserId, List<Pair<Long, Integer>> productQuantities) {
         Order order = orderFactory.buildOrder(payerUserId, payeeUserId, productQuantities);
-
         orderRepository.createOrder(order);
-
         return order;
     }
 
+    /**
+     *查询订单
+     *
+     * @param orderNo
+     * @return
+     */
     public Order findOrderByMerchantOrderNo(String orderNo) {
         return orderRepository.findByMerchantOrderNo(orderNo);
     }

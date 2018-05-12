@@ -14,12 +14,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by changming.xie on 9/15/16.
+ * 拓展事务序列化
  */
 public class ExpandTransactionSerializer {
 
+    /**
+     * 事务序列化
+     *
+     * @param serializer
+     * @param transaction
+     * @return
+     */
     public static Map<byte[], byte[]> serialize(ObjectSerializer serializer, Transaction transaction) {
-
         Map<byte[], byte[]> map = new HashMap<byte[], byte[]>();
 
         map.put("GLOBAL_TX_ID".getBytes(), transaction.getXid().getGlobalTransactionId());
@@ -35,8 +41,14 @@ public class ExpandTransactionSerializer {
         return map;
     }
 
+    /**
+     * 事务反序列化
+     *
+     * @param serializer
+     * @param map1
+     * @return
+     */
     public static Transaction deserialize(ObjectSerializer serializer, Map<byte[], byte[]> map1) {
-
         Map<String, byte[]> propertyMap = new HashMap<String, byte[]>();
 
         for (Map.Entry<byte[], byte[]> entry : map1.entrySet()) {

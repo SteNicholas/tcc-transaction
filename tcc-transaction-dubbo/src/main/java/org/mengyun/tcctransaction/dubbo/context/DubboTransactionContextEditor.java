@@ -10,12 +10,12 @@ import org.mengyun.tcctransaction.dubbo.constants.TransactionContextConstants;
 import java.lang.reflect.Method;
 
 /**
- * Created by changming.xie on 1/19/17.
+ * Dubbo事务上下文编辑器
  */
 public class DubboTransactionContextEditor implements TransactionContextEditor {
+
     @Override
     public TransactionContext get(Object target, Method method, Object[] args) {
-
         String context = RpcContext.getContext().getAttachment(TransactionContextConstants.TRANSACTION_CONTEXT);
 
         if (StringUtils.isNotEmpty(context)) {
@@ -27,7 +27,7 @@ public class DubboTransactionContextEditor implements TransactionContextEditor {
 
     @Override
     public void set(TransactionContext transactionContext, Object target, Method method, Object[] args) {
-
+        //通过 Dubbo的隐式传参的方式避免在 Dubbo Service接口上声明TransactionContext参数对接口产生入侵
         RpcContext.getContext().setAttachment(TransactionContextConstants.TRANSACTION_CONTEXT, JSON.toJSONString(transactionContext));
     }
 }
