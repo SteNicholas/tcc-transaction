@@ -1,5 +1,6 @@
 package org.mengyun.tcctransaction.server.dao;
 
+import org.mengyun.tcctransaction.server.dto.PageDto;
 import org.mengyun.tcctransaction.server.vo.PageVo;
 import org.mengyun.tcctransaction.server.vo.TransactionVo;
 
@@ -39,6 +40,7 @@ public class JdbcTransactionDao implements TransactionDao {
 
     @Override
     public List<TransactionVo> findTransactions(Integer pageNum, int pageSize) {
+
         Connection connection = getConnection();
         List<TransactionVo> transactionVos = new ArrayList<TransactionVo>();
         PreparedStatement preparedStatement = null;
@@ -82,6 +84,7 @@ public class JdbcTransactionDao implements TransactionDao {
 
     @Override
     public Integer countOfFindTransactions() {
+
         Connection connection = getConnection();
         PageVo<TransactionVo> pageVo = new PageVo<TransactionVo>();
         List<TransactionVo> transactionVos = new ArrayList<TransactionVo>();
@@ -107,6 +110,7 @@ public class JdbcTransactionDao implements TransactionDao {
 
     @Override
     public void resetRetryCount(String globalTxId, String branchQualifier) {
+
         Connection connection = getConnection();
         PreparedStatement preparedStatement = null;
         try {
@@ -234,5 +238,16 @@ public class JdbcTransactionDao implements TransactionDao {
 
     public void setTableSuffix(String tableSuffix) {
         this.tableSuffix = tableSuffix;
+    }
+
+    @Override
+    public PageDto<TransactionVo> findTransactionPageDto(Integer pageNum, int pageSize) {
+
+        List<TransactionVo> transactionVos = findTransactions(pageNum, pageSize);
+
+        Integer countOfFindTransactions = countOfFindTransactions();
+
+        return new PageDto<TransactionVo>(transactionVos, pageNum, pageSize, countOfFindTransactions);
+
     }
 }
